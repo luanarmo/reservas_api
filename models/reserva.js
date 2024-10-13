@@ -11,13 +11,49 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
+      Reserva.belongsTo(models.Evento, {
+        foreignKey: 'evento_id',
+        as: 'evento'
+      });
     }
   }
   Reserva.init({
-    evento_id: DataTypes.INTEGER,
-    nombre_usuario: DataTypes.STRING,
-    cantidad_boletos: DataTypes.INTEGER,
-    fecha_reserva: DataTypes.DATE
+    evento_id: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      references: {
+        model: 'Eventos',
+        key: 'id'
+      }
+    },
+    nombre_usuario: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      validate: {
+        notEmpty: true,
+        is: /^[a-zA-Z\s]+$/i,
+        len: [2, 100]
+      }
+    },
+    cantidad_boletos: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      validate: {
+        isInt: true,
+        notEmpty: true,
+        min: 1
+      }
+    },
+    fecha_reserva: {
+      type: DataTypes.DATE,
+      allowNull: false,
+      defaultValue: DataTypes.NOW,
+      validate: {
+        isDate: true,
+        notEmpty: true,
+        isAfter: new Date().toDateString() // Asegura que la fecha sea en el futuro
+      }
+    }
   }, {
     sequelize,
     modelName: 'Reserva',
