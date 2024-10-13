@@ -11,12 +11,40 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
+      Evento.hasMany(models.Reserva, {
+        foreignKey: 'evento_id',
+        as: 'reservas'
+      });
     }
   }
   Evento.init({
-    nombre: DataTypes.STRING,
-    fecha: DataTypes.DATE,
-    ubicacion: DataTypes.STRING
+    nombre: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      validate: {
+        notEmpty: true,
+        is: /^[a-zA-Z\s]+$/i,
+        len: [2, 100]
+      }
+    },
+    fecha: {
+      type: DataTypes.DATE,
+      allowNull: false,
+      validate: {
+        isDate: true,
+        notEmpty: true,
+        isAfter: new Date().toDateString() // Asegura que la fecha sea en el futuro
+      }
+    },
+    ubicacion: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      validate: {
+        notEmpty: true,
+        is: /^[a-zA-Z\s]+$/i,
+        len: [5, 200]
+      }
+    }
   }, {
     sequelize,
     modelName: 'Evento',
